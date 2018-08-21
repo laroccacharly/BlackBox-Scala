@@ -1,4 +1,4 @@
-name := "scala_hello"
+name := "BlackBox"
 
 version := "0.1"
 
@@ -24,5 +24,9 @@ libraryDependencies  ++= Seq(
 
 libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.4.0"
 libraryDependencies += "org.scalamock" %% "scalamock" % "4.1.0" % "test"
+libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.14"
+libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.5.14" % Test
+
+libraryDependencies += "com.wix" %% "accord-core" % "0.7.2"
 
 resolvers += "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
