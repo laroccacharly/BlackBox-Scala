@@ -1,5 +1,3 @@
-package store
-
 import java.util.Date
 import config.Config
 
@@ -7,8 +5,7 @@ import config.Config
 case class ExperimentData(startTime: Date,
                           endTime: Date,
                           config: Config,
-                          values: Iterable[Double] = Iterable.empty[Double],
-                          timeStamps: Iterable[Date] = Iterable.empty[Date]){
+                          results: OptimizationResults){
 
   def executionTime: Double = {
     endTime.getTime - startTime.getTime // milliseconds

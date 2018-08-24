@@ -26,9 +26,10 @@ class MasterTest extends TestHelperWithKit {
         workers = List(workerProbe1.ref, workerProbe2.ref),
         initObservation = initObservation,
         makeSampler = makeSampler,
-        stoppingCriteria = 0.4,
+        stoppingCriteria = 0.45,
         pullingPeriod = 100,
-        store = storeProbe.ref
+        store = storeProbe.ref,
+        domain = Interval(0,1)
       )
     )
   }
@@ -65,7 +66,7 @@ class MasterTest extends TestHelperWithKit {
   it should "send EndOfExperiment store with an OptimizationResults" in within(500 millis) {
     workerProbe1.send(master, ObservationMessage(secondObservationFromWorker))
     master ! UpdateBestObservation
-    val expectedOptimizationResults = OptimizationResults(List(secondObservationFromWorker, firstObservationFromWorker), Map("w1" -> 1, "w2" -> 1))
+    val expectedOptimizationResults = OptimizationResults(List(secondObservationFromWorker, firstObservationFromWorker), Map("w1" -> 1, "w2" -> 1), secondObservationFromWorker)
     storeProbe.expectMsg(Store.EndOfExperiment(expectedOptimizationResults))
     workerProbe1.expectMsgType[UpdateSampler]
     workerProbe2.expectMsgType[UpdateSampler]

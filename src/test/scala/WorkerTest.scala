@@ -3,9 +3,10 @@ import akka.testkit._
 
 class WorkerTest extends TestHelperWithKit{
   import Worker._
-  trait fixture {
+  import Master._
 
-    val probe = TestProbe("heeo")
+  trait fixture {
+    val probe = TestProbe()
 
     def makeWorker = {
       val props = Worker.props(
@@ -21,7 +22,6 @@ class WorkerTest extends TestHelperWithKit{
           (10 until 20).foreach(v => func.expects(*).returns(v).anyNumberOfTimes)
           func
         },
-        parent = probe.ref
       )
       system.actorOf(props)
     }
@@ -36,16 +36,16 @@ class WorkerTest extends TestHelperWithKit{
 
   "!Work" should "send observation to its parent" in new fixture {
     val worker =  makeWorker
-    worker ! Work
-    probe.expectMsg(Observation(0, 10))
+    probe.send(worker, Work)
+    probe.expectMsg(ObservationMessage(Observation(0, 10)))
   }
 
   "!UpdateSampler" should "update var sampler" in new fixture {
     val worker = makeWorker
     val newSampler = makeNewSampler
     worker ! UpdateSampler(newSampler)
-    worker! Work
-    probe.expectMsg(Observation(100, 10))
+    probe.send(worker, Work)
+    probe.expectMsg(ObservationMessage(Observation(100, 10)))
   }
 
 }

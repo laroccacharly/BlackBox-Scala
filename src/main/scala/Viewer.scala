@@ -1,9 +1,8 @@
-package viewer
 import plotly.element.Error.Data
 import plotly.{layout, _}
 import Plotly._
-import store.{DataBaseMD, ExperimentData}
 import helpers.Algebra
+
 import scala.collection.mutable.Map
 import scala.collection.immutable.List
 
@@ -34,3 +33,4 @@ class Viewer(field: String,
     Bar(fieldValues, values, error_y = Data(errors)).plot(title = title, xaxis = layout.Axis(title = xaxis), yaxis = layout.Axis(title = yaxis))
   }
 }
+

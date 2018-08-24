@@ -1,5 +1,4 @@
-import config.{ConfigFactory}
-
+import config.ConfigFactory
 
 object Main extends App {
   override def main(args: Array[String]): Unit = {
@@ -7,27 +6,19 @@ object Main extends App {
     if(args.isEmpty) default
     else {
       args.head match  {
-        case "viewer" => viewer123
-        case s: String => coolStuff
+        case "demoSampler" => DemoGreedySampler.makeDemo(1000)
+        case s: String => commandNotSupported
       }
     }
 
-
     def default = {
-      ConfigFactory.makeConfigs.foreach(config => {
-        Experiment(config).run
-      })
+      val config = ConfigFactory.makeSquare
+      Experiment(config).run
     }
 
-    def coolStuff = {
-      println("Fill me up")
+    def commandNotSupported = {
+      println("commandNotSupported")
     }
-
-    def viewer123 = {
-      import viewer._
-      val v = new Viewer("config.experimentName", List("un", "deux", "trois"))
-      v.makeBarPlot(e => e.executionTime)
-    }
-
   }
 }
+

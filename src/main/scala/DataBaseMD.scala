@@ -1,15 +1,14 @@
-package store
 
 import config.Config
-import org.mongodb.scala.bson.codecs.Macros._
-import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries, _}
+import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
+import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters.{equal, exists}
 import org.mongodb.scala.{Completed, MongoClient, MongoCollection, MongoDatabase, Observer, result}
 
 // Setup connections to the database.
 trait MongoConfig {
-  val codecRegistry = fromRegistries(fromProviders(classOf[ExperimentData], classOf[Config]), DEFAULT_CODEC_REGISTRY )
+  val codecRegistry = fromRegistries(fromProviders(classOf[ExperimentData], classOf[Config], classOf[OptimizationResults], classOf[Observation]), DEFAULT_CODEC_REGISTRY )
   val mongoClient: MongoClient = MongoClient()
   val database: MongoDatabase = mongoClient.getDatabase("testDb").withCodecRegistry(codecRegistry)
   val collection: MongoCollection[ExperimentData] = database.getCollection("testCollection")

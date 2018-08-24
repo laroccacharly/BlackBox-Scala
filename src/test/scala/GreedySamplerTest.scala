@@ -14,7 +14,7 @@ class GreedySamplerTest extends TestHelper {
     def setUpExpectations = randomNumbers.foreach(n => nextRandom.expects().returns(n))
 
     //Expectation
-    def expectedSampleValue = 6.2
+    def expectedSampleValue = 3.7
 
     // Make sampler
     def sampler = new GreedySampler(
