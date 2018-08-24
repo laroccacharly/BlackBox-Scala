@@ -1,4 +1,4 @@
-#Distributed BlackBox Optimisation in Scala 
+# Distributed BlackBox Optimisation in Scala 
 
 The goal of BlackBox optimization is to find the minimum (or the maximum) of a function
 for which the analytic form is not known (which is almost always the case).
