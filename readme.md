@@ -33,7 +33,7 @@ progress = (abs(currentBestSample - sample) + progress) / 2
 ## EpsilonGreedy 
 Instead of sampling randomly in the domain, why not sample greedily? 
 That means sampling close to the `currentBestSample`. 
-We can use an EpsilonGreedy algorithm that takes a greedy action `epsilon` percent of the time and non-greedy action `1-epsilon` percent of the time. For example: 
+We can use an EpsilonGreedy sampling strategy that takes a greedy action `epsilon` percent of the time and non-greedy action `1-epsilon` percent of the time. For example: 
 
 ```scala
 def isGreedy = nextRandom() < epsilon // if epsilon is 0.3 => a greedy sample will be taken 30% of the time. 
@@ -44,25 +44,25 @@ def sample = {
 }
 ```
 
-
+With an EpsilonGreedy strategy, the sampling distribution can look like this : 
 ![alt text](plotGreedySampler.png)
 
-To set `greedyDomainSize`, 
-I used `progress` so that `greedyDomainSize = const * progress` because as `progress` becomes smaller, 
-we expect `greedyDomainSize` to get smaller also. 
+`greedyDomainSize` could be an hyperparameter just like `epsilon`.  
+In our case, the following formula is used  `greedyDomainSize = const * progress` because, as the algorithm converges
+ to the minimum, the `greedyDomainSize` should get smaller. 
 
 ## A Distributed approach (WIP)
 
 Is there a way to improve the basic algorithm even more? 
-Why not use parallelism? The function can be sampled by multiple workers
-at the same time. Results would be sent to a Master that updates the  `currentBestResult`
-until the `stoppingCriteria` is reached. 
+Why not use parallelism? The function doesn't have to be evaluated in a specific order. 
+Instead, it can be sampled by multiple workers at the same time. Observations made by the workers 
+are processed by a Master that updates the `currentBestObservation` until the `stoppingCriteria` is reached. 
 
-Here is the architecture of the program that I propose. 
+Here is a possible architecture : 
 
 ![alt text](architecture.png)
 
-A User passes in a `configName` that a `ConfigFactory` uses to create the configuration object of the experiment. 
+A User gives a `configName` that a `ConfigFactory` uses to create the configuration object of the experiment. 
 It basically contains hyperparameters such as `epsilon` and `stoppingCriteria` that are used to initialize all the different actors. 
 
 - 1 : `Start` is sent to master. It triggers the experiment. 
@@ -86,7 +86,8 @@ How much energy do you have to put into it to get a result that
 is "good enough"?
 For a simple function such as `x => (x -1) * x`, the electric power used to power the algorithm is not a concern. 
 We are more interested in finding a solution in a short amount of time.
-This is not necessarily the case when dealing with functions that are extremely expensive to evaluate. A metric for that could be the total number of function evaluations. 
+This is not necessarily the case when dealing with functions that are extremely expensive to evaluate. 
+In that case, we might be more interested in the total number of function evaluations. 
 
 From that we can describe 3 KPIs: 
 - Total time: the difference between `EndExperiment` and `StartExperiment`
