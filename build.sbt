@@ -21,7 +21,7 @@ libraryDependencies  ++= Seq(
   // It depends on LGPL code
   "org.scalanlp" %% "breeze-viz" % "0.13.2"
 )
-
+libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.6.4"
 libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.4.0"
 libraryDependencies += "org.scalamock" %% "scalamock" % "4.1.0" % "test"
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.14"
