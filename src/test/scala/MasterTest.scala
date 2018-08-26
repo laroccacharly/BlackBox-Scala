@@ -29,14 +29,15 @@ class MasterTest extends TestHelperWithKit {
         stoppingCriteria = 0.45,
         pullingPeriod = 100,
         store = storeProbe.ref,
-        domain = Interval(0,1)
+        domain = Interval(0,1),
+        dampening = 0.5
       )
     )
   }
 
   val master = makeMaster
   When("!Start")
-  it should "send Work to all workers and send StartOfExperiment to store" in within(500 millis) {
+  it should "send Work to all workers and send StartOfExperiment to store" in {
     master ! Start
     workerProbe1.expectMsg(Work)
     workerProbe2.expectMsg(Work)
@@ -44,7 +45,7 @@ class MasterTest extends TestHelperWithKit {
   }
 
   When("master receives UpdateBestObservation and no ObservationMessage where received")
-  it should "should not send any messages" in within(500 millis) {
+  it should "should not send any messages" in {
     master ! UpdateBestObservation
     workerProbe1.expectNoMessage(100 millis)
     workerProbe2.expectNoMessage(100 millis)
@@ -53,7 +54,7 @@ class MasterTest extends TestHelperWithKit {
 
   Given("worker2 sends ObservationMessage to master and stoppingCriteria not reached")
   When("master receives UpdateBestObservation")
-  it should "should send Work to worker2 and send UpdateSampler to all workers " in within(500 millis) {
+  it should "should send Work to worker2 and send UpdateSampler to all workers " in {
     workerProbe2.send(master, ObservationMessage(firstObservationFromWorker))
     master ! UpdateBestObservation
     workerProbe1.expectMsgType[UpdateSampler]
@@ -63,7 +64,7 @@ class MasterTest extends TestHelperWithKit {
 
   Given("worker1 sends ObservationMessage to master and stoppingCriteria is reached")
   When("master receives UpdateBestObservation")
-  it should "send EndOfExperiment store with an OptimizationResults" in within(500 millis) {
+  it should "send EndOfExperiment store with an OptimizationResults" in  {
     workerProbe1.send(master, ObservationMessage(secondObservationFromWorker))
     master ! UpdateBestObservation
     val expectedOptimizationResults = OptimizationResults(List(secondObservationFromWorker, firstObservationFromWorker), Map("w1" -> 1, "w2" -> 1), secondObservationFromWorker)
@@ -74,7 +75,7 @@ class MasterTest extends TestHelperWithKit {
 
   Given("worker1 sends ObservationMessage to master and results are already published")
   When("master receives UpdateBestObservation")
-  it should "not send any message" in within(500 millis) {
+  it should "not send any message" in  {
     workerProbe1.send(master, ObservationMessage(secondObservationFromWorker))
     master ! UpdateBestObservation
     storeProbe.expectNoMessage(100 millis)

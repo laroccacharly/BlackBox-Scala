@@ -38,7 +38,7 @@ case class Experiment(config: Config) {
 
   private def makeStore = system.actorOf(Store.props(config))
 
-  private def makeMaster = system.actorOf(Master.props(workers, stoppingCriteria, firstObservation, makeSampler, pullingPeriod, store, domain))
+  private def makeMaster = system.actorOf(Master.props(workers, stoppingCriteria, firstObservation, makeSampler, pullingPeriod, store, domain, dampening))
 
   private def makeSampler(greedyDomainSize: Double): () => Double = {
     val sampler = new GreedySampler(currentMin = firstObservation.input, greedyDomainSize, (domain.min, domain.max), epsilon)

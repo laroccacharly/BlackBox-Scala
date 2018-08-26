@@ -10,8 +10,8 @@ object Master {
             initObservation: Observation,
             makeSampler: Double => () => Double,
             pullingPeriod: Int,
-            store: ActorRef, domain: Interval) =
-    Props(new Master(workers, stoppingCriteria, initObservation, makeSampler, pullingPeriod, store, domain))
+            store: ActorRef, domain: Interval, dampening: Double) =
+    Props(new Master(workers, stoppingCriteria, initObservation, makeSampler, pullingPeriod, store, domain, dampening))
 }
 
 
@@ -20,7 +20,8 @@ class Master(workers: List[ActorRef],
              initObservation: Observation,
              makeSampler: Double => () => Double,
              pullingPeriod: Int,
-             store: ActorRef, domain: Interval) extends Actor {
+             store: ActorRef,
+             domain: Interval, dampening: Double) extends Actor {
   import scala.collection.mutable.Map
   import Master._
   import Worker._
@@ -92,7 +93,7 @@ class Master(workers: List[ActorRef],
 
   def updateBestObservation(observation: Observation) = {
     val newProgress = math.abs(observation.input - currentBestObservation.input)
-    lastProgress = (newProgress + lastProgress) / 2
+    lastProgress = dampening * newProgress + (1 - dampening) * lastProgress
     log.warning(s"lastProgress: $lastProgress")
 
     currentBestObservation = observation

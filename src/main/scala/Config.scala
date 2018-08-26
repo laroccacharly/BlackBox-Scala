@@ -9,6 +9,7 @@ case class Config(domainMin: Double,
                   nbIter: Int,
                   stoppingCriteria: Double,
                   pullingPeriod: Int,
+                  dampening: Double,
                   experimentName: String = "test_"+math.random()
                  )
 
@@ -16,15 +17,16 @@ object ConfigFactory {
   def makeSquare = {
     Config(
       domainMin = 0,
-      domainMax = 1,
-      goal = 0,
+      domainMax = 2,
+      goal = 1,
       functionName = "square",
       epsilon = 0.5,
       nbWorkers = 10,
       nbIter = 10,
-      stoppingCriteria = 0.1,
+      stoppingCriteria = 0.3,
       pullingPeriod = 100,
-      experimentName = "square"
+      experimentName = "square",
+      dampening = 0.8 // dampening * newProgress + (1 - dampening) * lastProgress
     )
   }
 }
