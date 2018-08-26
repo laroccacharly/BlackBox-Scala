@@ -7,10 +7,10 @@ import helpers.Time
 object Store {
   case object StartOfExperiment
   case class EndOfExperiment(optimizationResults: OptimizationResults)
-  def props(config: Config) = Props(new Store(config))
+  def props(config: Config, killSwitch: ActorRef, toDataBase: ExperimentData => Unit = DataBaseMD.storeDocument(_)) = Props(new Store(config, killSwitch, toDataBase))
 }
 
-class Store(config: Config,  toDataBase: ExperimentData => Unit = DataBaseMD.storeDocument(_)) extends Actor with Time {
+class Store(config: Config,  killSwitch: ActorRef, toDataBase: ExperimentData => Unit) extends Actor with Time {
   import Store._
 
   var startTime: Date = null
@@ -21,6 +21,7 @@ class Store(config: Config,  toDataBase: ExperimentData => Unit = DataBaseMD.sto
     case EndOfExperiment(results) => {
       endTime = getTime
       storeToDataBase(results)
+      killSwitch ! KillSwitch.ShutdownMessage
     }
   }
 

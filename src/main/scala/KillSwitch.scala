@@ -1,14 +1,21 @@
 import akka.actor.{Actor, Props}
+import akka.event.Logging
 
-object ShutdownMessage
 
 object KillSwitch {
+  object ShutdownMessage
   def props : Props = Props[KillSwitch]
 }
 
 class KillSwitch extends Actor {
+  import KillSwitch._
+  val log = Logging(context.system, this)
+
   def receive = {
-    case ShutdownMessage => context.system.terminate()
+    case ShutdownMessage => {
+      log.warning("Terminating system")
+      context.system.terminate()
+    }
     case _ => {}
   }
 }
