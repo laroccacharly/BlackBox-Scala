@@ -5,6 +5,7 @@ import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters.{equal, exists}
 import org.mongodb.scala.{Completed, MongoClient, MongoCollection, MongoDatabase, Observer, result}
+import scala.concurrent._
 
 // Setup connections to the database.
 trait MongoConfig {
@@ -28,7 +29,7 @@ object DataBaseMD extends MongoConfig {
   def count: Unit  = {
     collection.countDocuments().subscribe(
       new CustomObserver[Long] {
-        override def onNext(result: Long): Unit = println("count is", result)
+        override def onNext(result: Long): Unit = println(s"count is $result")
       }
     )
   }
@@ -36,16 +37,27 @@ object DataBaseMD extends MongoConfig {
   def deleteAll: Unit  = {
     collection.deleteMany(exists("_id")).subscribe(
       new CustomObserver[result.DeleteResult] {
-        override def onNext(r: result.DeleteResult): Unit = println("deleted : ", r)
+        override def onNext(r: result.DeleteResult): Unit = {
+          val count = r.getDeletedCount
+          println(s"deleted $count documents")
+        }
       }
     )
   }
 
-  def getDocuments(field: String, value: String, callback: ExperimentData => Unit): Unit = {
-    collection.find(equal(field, value)).subscribe(
+  def withExperimentData(experimentName: String): Future[List[ExperimentData]] = {
+    var experimentDatas: List[ExperimentData] = List.empty[ExperimentData]
+    def appendExperimentData(experimentData: ExperimentData) = experimentDatas = experimentData :: experimentDatas
+
+    val promise = Promise[List[ExperimentData]]
+
+    collection.find(equal("config.experimentName", experimentName)).subscribe(
       new CustomObserver[ExperimentData] {
-        override def onNext(result: ExperimentData): Unit = callback(result)
+        override def onNext(result: ExperimentData): Unit = appendExperimentData(result)
+        override def onComplete(): Unit = promise.success(experimentDatas)
       })
+
+    promise.future
   }
 
   def storeDocument(doc: ExperimentData): Unit  = {
