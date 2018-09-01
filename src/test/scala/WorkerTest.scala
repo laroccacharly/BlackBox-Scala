@@ -1,7 +1,7 @@
 import akka.actor._
 import akka.testkit._
 
-class WorkerTest extends TestHelperWithKit{
+class WorkerTest extends TestHelperWithKit {
   import Worker._
   import Master._
 
