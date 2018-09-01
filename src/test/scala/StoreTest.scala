@@ -4,7 +4,7 @@ import config.ConfigFactory
 class StoreTest extends TestHelperWithKit {
   import Store._
   val toDataBase = mockFunction[ExperimentData, Unit]
-  val config = ConfigFactory.makeSquare
+  val config = ConfigFactory.defaultConfig
   val killSwitchProbe = TestProbe()
 
   val store = system.actorOf(Store.props(config, killSwitchProbe.ref, toDataBase))
