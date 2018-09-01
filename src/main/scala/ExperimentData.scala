@@ -10,4 +10,10 @@ case class ExperimentData(startTime: Date,
   def executionTime: Double = {
     endTime.getTime - startTime.getTime // milliseconds
   }
+
+  def accuracy: Double = {
+    math.abs(config.goal - results.bestObservation.input)
+  }
+
+  def name: String = config.experimentName
 }
