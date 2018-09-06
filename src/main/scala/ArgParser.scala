@@ -12,11 +12,12 @@ class ArgParser(args: Array[String]) extends Runner {
     opt[Seq[String]]('e', "experimentNames")
       .valueName("<exp1>,<exp2>...")
       .action( (x,c) => c.copy(experimentNames = x) )
-      .text("experimentNames to process")
+      .text("experimentNames to process.")
       .validate( names => {
 
         if (isExperimentNamesValid(names.toList)) success
-        else failure("Not a valid experimentNames")
+        else failure("Not a valid experimentNames. Supported experiment names : "
+          + supportedExperimentNames.reduce((a,b) => a + "," + b))
       })
 
     opt[Int]('n', "numberIteration")
@@ -42,7 +43,8 @@ class ArgParser(args: Array[String]) extends Runner {
           .required
           .validate( a => {
             if (isAttributeSupportedByViewer(a)) success
-            else failure("Not a valid attribute")
+            else failure("Not a valid attribute. It should either of theses : "
+              + viewableAttributes.toString)
           })
       )
 
