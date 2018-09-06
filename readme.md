@@ -51,7 +51,7 @@ With an EpsilonGreedy strategy, the sampling distribution can look like this :
 In our case, the following formula is used  `greedyDomainSize = const * progress` because, as the algorithm converges
  to the minimum, the `greedyDomainSize` should get smaller. 
 
-## A Distributed approach (WIP)
+## A Distributed approach 
 
 Is there a way to improve the basic algorithm even more? 
 Why not use parallelism? The function doesn't have to be evaluated in a specific order. 
@@ -77,23 +77,21 @@ because of raise conditions that can occur when two `Workers` send an observatio
 - 7 : When the experiment is done, `Master` gathers data and sends `EndExperiment` to the `Store`. 
 - 8 : `Store` forwards the data to the `DataBase`. 
 
+## API 
 
-## KPI (WIP)
+To run the experiment `square` 10 times. 
+```
+run -e square -n 10
+```
+Each experiment will be stored in a MongoDB collection. 
+To view the results : 
+```
+run view -e square -a executionTime 
+```
+That will plot an histogram of the execution times 
+for the `square` experiment. 
 
-How should we evaluate the performance of this algorithm? 
-At the end of the day, what matter is efficiency. 
-How much energy do you have to put into it to get a result that 
-is "good enough"?
-For a simple function such as `x => (x -1) * x`, the electric power used to power the algorithm is not a concern. 
-We are more interested in finding a solution in a short amount of time.
-This is not necessarily the case when dealing with functions that are extremely expensive to evaluate. 
-In that case, we might be more interested in the total number of function evaluations. 
 
-From that we can describe 3 KPIs: 
-- Total time: the difference between `EndExperiment` and `StartExperiment`
-- Precision: the difference between the real min and the estimated min. 
-This tells us how "good" the solution is.  
-- Number of function evaluations 
-  
+## Results (WIP)
 
 
