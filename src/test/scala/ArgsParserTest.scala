@@ -2,14 +2,14 @@ import java.io.ByteArrayOutputStream
 
 class ArgsParserTest extends TestHelper {
 
-  val runExperimentsStub = stubFunction[List[String], Int, Unit]
+  val runExperimentsStub = stubFunction[List[String], Int, Boolean, Unit]
   val viewExperimentsStub = stubFunction[List[String], String, Unit]
   val cleanDbStub = stubFunction[Unit]
 
   trait RunnerMock extends Runner {
 
-    override def runExperiments(experimentNames: List[String], numberIteration: Int): Unit =
-      runExperimentsStub(experimentNames, numberIteration)
+    override def runExperiments(experimentNames: List[String], numberIteration: Int, verbose: Boolean): Unit =
+      runExperimentsStub(experimentNames, numberIteration, verbose)
 
     override def viewExperiments(experimentNames: List[String], attribute: String): Unit =
       viewExperimentsStub(experimentNames, attribute)
@@ -39,12 +39,12 @@ class ArgsParserTest extends TestHelper {
 
   "-e square1 -n 10" should "run experiment square1 10 times" in {
     processArgs("-e square1 -n 10")
-    runExperimentsStub.verify(List("square1"), 10)
+    runExperimentsStub.verify(List("square1"), 10, false)
   }
 
   "-e square1" should "run experiment square1 1 times" in {
-    processArgs("-e square1")
-    runExperimentsStub.verify(List("square1"), 1)
+    processArgs("-e square1 -v")
+    runExperimentsStub.verify(List("square1"), 1, true)
   }
 
   "-e random" should "throw an error because random is not a valid experiment" in {
@@ -62,7 +62,7 @@ class ArgsParserTest extends TestHelper {
 
   "-e square2 -n 5" should "run experiment square2 5 times" in {
     processArgs("-e square2 -n 5")
-    runExperimentsStub.verify(List("square2"), 5)
+    runExperimentsStub.verify(List("square2"), 5, false)
   }
 
 

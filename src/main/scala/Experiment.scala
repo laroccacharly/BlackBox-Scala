@@ -7,10 +7,10 @@ import scala.concurrent.duration._
 
 
 trait ExperimentRunner {
-  def run(config: Config) = Experiment(config).run
+  def run(config: Config, verbose: Boolean) = Experiment(config, verbose).run
 }
 
-case class Experiment(config: Config) {
+case class Experiment(config: Config, verbose: Boolean) {
   import  config._
   
   // functions cannot be stored in a DB. So we use a switch statement.

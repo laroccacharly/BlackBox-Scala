@@ -28,9 +28,9 @@ class ArgParser(args: Array[String]) extends Runner {
         else failure("Not a valid numberIteration")
       })
 
-    opt[Unit]("verbose")
+    opt[Unit]('v', "verbose")
       .action( (_, c) => c.copy(verbose = true) )
-      .text("verbose is a flag")
+      .text("verbose flag")
 
 
     cmd("view").
@@ -55,11 +55,11 @@ class ArgParser(args: Array[String]) extends Runner {
 
   def execute = {
     parser.parse(args, ArgsConfig()) match {
-      case Some(ArgsConfig(experimentNames, numberIteration, attribute, v, mode)) => {
+      case Some(ArgsConfig(experimentNames, numberIteration, attribute, verbose, mode)) => {
         mode match {
           case "view" => viewExperiments(experimentNames.toList, attribute)
           case "cleanDb" => cleanDb
-          case _ => runExperiments(experimentNames.toList, numberIteration)
+          case _ => runExperiments(experimentNames.toList, numberIteration, verbose)
         }
       }
 
