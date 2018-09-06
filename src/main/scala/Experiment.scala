@@ -17,11 +17,8 @@ trait ExperimentRunner {
 
 case class Experiment(config: Config, verbose: Boolean) {
   import  config._
-  
-  // functions cannot be stored in a DB. So we use a switch statement.
-  val f: Double => Double = functionName match {
-    case "square" => x => (x - 1) * (x - 1)
-  }
+
+
 
   // Initializations
   val domain = Interval(domainMin, domainMax)
