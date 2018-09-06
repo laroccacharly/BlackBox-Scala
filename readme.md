@@ -93,5 +93,18 @@ for the `square` experiment.
 
 
 ## Results (WIP)
+This first plot shows how the application behaves for different numbers of workers. 
+
+![alt text](plot1.png)
+
+Raw data : https://goo.gl/gi5X3S
+
+Legend : 
+- WX => X workers
+- PX => X ms for the pulling period 
+- DX => X is dampening's value
+- EX => X is epsilon's value
+
+We can see that for 30 workers we get better precision in the same amount of time. 
 
 
