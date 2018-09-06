@@ -1,36 +1,53 @@
-import plotly.element.Error.Data
-import plotly.{layout, _}
+import plotly.element._
+import plotly.{element, layout, _}
 import Plotly._
-import helpers.Algebra
 
-import scala.collection.mutable.Map
 import scala.collection.immutable.List
+import scala.concurrent._
+import scala.concurrent.duration._
 
 
-class Viewer(field: String,
-             fieldValues: List[String],
-             getExperimentData: (String, String, ExperimentData => Unit) => Unit = DataBaseMD.getDocuments(_, _, _)) extends Algebra
-{
-  val immutableStore = fieldValues.map(fieldValue => (fieldValue, List.empty[ExperimentData])).toMap // init the local store
-  var store: Map[String, List[ExperimentData]] = Map(immutableStore.toSeq: _*) // convert to mutable Map
-  fieldValues.foreach(fieldValue => getExperimentData(field, fieldValue, addToStore(fieldValue))) // import data to the store
+trait ExperimentViewer {
+  def viewableAttributes = List("executionTime", "accuracy", "AccVsTime")
 
-  private def addToStore(fieldValue: String)(experimentData: ExperimentData) = {
-    val previous: List[ExperimentData] = store(fieldValue)
-    store(fieldValue) =  experimentData :: previous
+  def viewExperiments(experimentNames: List[String], attribute: String) {
+    Viewer(experimentNames, attribute).viewExperiments
+  }
+}
+
+case class Viewer(experimentNames: List[String],
+                  attribute: String,
+                  nbBins: Int = 10,
+                  awaitTime: Duration = 10 seconds,
+                  loadExperimentData: (String) => Future[List[ExperimentData]] = DataBaseMD.withExperimentData(_)) {
+
+
+  def viewExperiments = {
+    val experimentCollections: List[List[ExperimentData]] = loadData
+    val traces = experimentCollections.map(makeTrace)
+    makePlot(traces)
   }
 
+  private def makeTrace(data: List[ExperimentData]): Trace = {
+    val experimentName = data.head.name
 
-  def makeBarPlot(p: ExperimentData => Double,
-                    title: String = "No Title",
-                    xaxis: String = field,
-                    yaxis: String = "yaxis"
-                   ) = {
-    val (values, errors) = fieldValues.map( fieldValue => {
-      meanAndStd(store(fieldValue).map(experimentData => p(experimentData)))
-    }).unzip
-
-    Bar(fieldValues, values, error_y = Data(errors)).plot(title = title, xaxis = layout.Axis(title = xaxis), yaxis = layout.Axis(title = yaxis))
+    attribute match {
+      case "executionTime" => makeHistogram(data.map(_.executionTime), experimentName)
+      case "accuracy" => makeHistogram(data.map(_.accuracy), experimentName)
+      case "AccVsTime" => Scatter(data.map(_.executionTime), data.map(_.accuracy), name = experimentName, mode = ScatterMode(ScatterMode.Markers))
+    }
   }
+
+  private def loadData = {
+    experimentNames.map(e => {
+      Await.result(loadExperimentData(e), awaitTime)
+    })
+  }
+
+  private def makeBins(data: List[Double]) = Bins(data.min, data.max, (data.max - data.min) / nbBins)
+  private def makeHistogram(data: List[Double], experimentName: String) =  Histogram(data, name = experimentName, xbins = makeBins(data))
+
+  private def makePlot(trace: Trace) = trace.plot()
+  private def makePlot(traces: Seq[Trace]) = traces.plot()
 }
 
