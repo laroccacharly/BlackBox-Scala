@@ -1,3 +1,8 @@
+/*
+  Experiment : Where the magic happens. It takes a config and init all the different actors.
+  Has one one public method "run" that sends "Start" to the master actor.
+ */
+
 import Master.{Start, UpdateBestObservation}
 import akka.actor.{ActorRef, ActorSystem, Props}
 import config.Config
@@ -45,10 +50,10 @@ case class Experiment(config: Config, verbose: Boolean) {
     scheduler.schedule(0 milliseconds, pullingPeriod milliseconds, master, UpdateBestObservation)
   }
 
-  private def makeKillSwitch = system.actorOf(KillSwitch.props)
-  private def makeStore = system.actorOf(Store.props(config, killSwitch))
+  private def makeKillSwitch = system.actorOf(KillSwitch.props, "KillSwitch")
+  private def makeStore = system.actorOf(Store.props(config, killSwitch), "Store")
 
-  private def makeMaster = system.actorOf(Master.props(workers, stoppingCriteria, firstObservation, makeSampler, pullingPeriod, store, domain, dampening))
+  private def makeMaster = system.actorOf(Master.props(workers, stoppingCriteria, firstObservation, makeSampler, pullingPeriod, store, domain, dampening), "Master")
 
   private def makeSampler(greedyDomainSize: Double): () => Double = {
     val sampler = new GreedySampler(currentMin = firstObservation.input, greedyDomainSize, (domain.min, domain.max), epsilon)

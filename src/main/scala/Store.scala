@@ -1,3 +1,7 @@
+/*
+  Store receives data from Master and store data to DataBase with experiment ends.
+ */
+
 import java.util.Date
 
 import akka.actor.{Actor, ActorRef, Props}

@@ -1,5 +1,9 @@
+/*
+  GreedySampler samples numbers in an EpsilonGreedy way for a given interval.
+ */
+
 class GreedySampler(
-                     currentMin: Double, // TODO: add default uniformSamplingInInterval
+                     currentMin: Double,
                      greedyDomainSize: Double,
                      interval: (Double, Double),
                      epsilon: Double,

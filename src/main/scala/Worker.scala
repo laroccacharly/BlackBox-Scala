@@ -1,5 +1,8 @@
-import akka.actor.{Actor, ActorRef, Props}
+/*
+  Worker samples the function that we want to minimize. Publish results to its parent.
+ */
 
+import akka.actor.{Actor, ActorRef, Props}
 
 object Worker {
   case class UpdateSampler(sampler: () => Double)

@@ -23,7 +23,6 @@ class CustomObserver[T] extends Observer[T] {
   override def onComplete(): Unit = println("Completed")
 }
 
-
 object DataBaseMD extends MongoConfig {
 
   def count: Unit  = {

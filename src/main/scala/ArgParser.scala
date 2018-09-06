@@ -1,3 +1,7 @@
+/*
+  ArgParser takes args from the command line, calls validation methods and commands.
+ */
+
 class ArgParser(args: Array[String]) extends Runner {
 
   case class ArgsConfig(experimentNames: Seq[String] = Seq(),

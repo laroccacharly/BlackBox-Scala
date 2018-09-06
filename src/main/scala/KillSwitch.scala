@@ -1,3 +1,7 @@
+/*
+  A simple actor that shutdown the system when it receives ShutdownMessage
+ */
+
 import akka.actor.{Actor, Props}
 import akka.event.Logging
 
